@@ -1,6 +1,11 @@
 Rails.application.routes.draw do
+
   root 'restaurants#index'
-  devise_for :users
+  get 'restaurants/index', as: 'user_root'
+
+  devise_for :users, controllers: {
+    omniauth_callbacks: 'users/omniauth_callbacks'
+  }
 
   if Rails.env.development?
     mount LetterOpenerWeb::Engine, at: '/letter_opener'
