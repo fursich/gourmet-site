@@ -3,10 +3,17 @@ class RestaurantsController < ApplicationController
   before_action :authenticate_user!, except: [:index, :show]
 
   def index
-    
+    @q = Restaurant.search(params[:q])
+    @restaurants = @q.result.page(params[:page]).per(20).order(:id)
   end
 
   def show
+    @restaurant = Restaurant.find(params[:id])
+    @map = Gmaps4rails.build_markers([@restaurant]) do |res, marker|
+      marker.lat  res.latitude
+      marker.lng  res.longitude
+      marker.json({title: res.name})
+    end
   end
   
   def new
@@ -18,14 +25,15 @@ class RestaurantsController < ApplicationController
   
   def confirm
     if params[:id].present?
-      @restaurant = Restaurant.find(params[id])
-      @restaurant.attibutes = input_params
+      @restaurant = Restaurant.find(params[:id])
+      @restaurant.attributes = input_params
       @restaurant.user_id = current_user.id
       if @restaurant.invalid?
         flash.now[:alert] = @restaurant.errors.full_messages
         render :edit
       elsif @restaurant.restaurant_images.first.image.blank?
-        flash.now[:alert] = Array(I18n.t('restaurant.image_error'))
+        @restaurant.errors[:base] << I18n.t('restaurant.image_error')
+        flash.now[:alert] = @restaurant.errors.full_messages
         render :edit
       end
     else
@@ -35,7 +43,8 @@ class RestaurantsController < ApplicationController
         flash.now[:alert] = @restaurant.errors.full_messages
         render :new
       elsif @restaurant.restaurant_images.first.image.blank?
-        flash.now[:alert] = Array(I18n.t('restaurant.image_error'))
+        @restaurant.errors[:base] << I18n.t('restaurant.image_error')
+        flash.now[:alert] = @restaurant.errors.full_messages
         render :new
       end
     end
@@ -51,6 +60,9 @@ class RestaurantsController < ApplicationController
     @restaurant = Restaurant.new(input_params)
     @restaurant.user_id = current_user.id
     if params[:back]
+    @restaurant.restaurant_images do |ri|
+      ri.image.cache! unless ri.image.blank?
+    end
       render :new
     else
       @restaurant.save!
@@ -61,13 +73,19 @@ class RestaurantsController < ApplicationController
   end
 
   def edit
-    @restaurant = Restaurant.find_by(id: params[id], user_id: current_user.id)
+    @restaurant = Restaurant.find_by(id: params[:id], user_id: current_user.id)
+    @restaurant.restaurant_images do |ri|
+      ri.image.cache! unless ri.image.blank?
+    end
   end
 
   def update
-    @restaurant = Restaurant.find_by(id: params[id], user_id: current_user.id)
-    @restaurant.attibutes = input_params
-    if @params[:back]
+    @restaurant = Restaurant.find_by(id: params[:id], user_id: current_user.id)
+    @restaurant.attributes = input_params
+    if params[:back]
+      @restaurant.restaurant_images do |ri|
+        ri.image.cache! unless ri.image.blank?
+      end
       render :new
     else
       @restaurant.save!
@@ -77,7 +95,7 @@ class RestaurantsController < ApplicationController
   end
 
   def destroy
-    restaurant = Restaurant.find_by(id: params[id], user_id: current_user.id)
+    restaurant = Restaurant.find_by(id: params[:id], user_id: current_user.id)
     restaurant.destroy!
     flash[:notice] = I18n.t('restaurant.deleted')
     redirect_to action: :index
@@ -85,6 +103,6 @@ class RestaurantsController < ApplicationController
   
   private
   def input_params
-    params.require(:restaurant).permit(:name, :telephone_number, :address, :has_private_room, :seat_count, :open_date, genre_ids:[], restaurant_images_attributes:[:id, :image, :image_cache])
+    params.require(:restaurant).permit(:name, :telephone_number, :address, :has_private_room, :seat_count, :open_date, genre_ids: [], restaurant_images_attributes: [:id, :image, :image_cache])
   end
 end

@@ -1,6 +1,7 @@
 class Restaurant < ActiveRecord::Base
     has_many :restaurant_genres
     has_many :genres, through: :restaurant_genres
+    has_many :reviews, dependent: :destroy
     has_many :restaurant_images, dependent: :destroy
     accepts_nested_attributes_for :restaurant_images
     

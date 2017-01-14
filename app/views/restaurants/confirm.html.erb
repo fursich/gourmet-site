@@ -56,7 +56,7 @@
 
       <%= f.fields_for :restaurant_images do |rf| %>
         <% if rf.object.image? %>
-          <tr class='image'>
+          <tr class="image">
             <th><%= f.label :image %></th>
             <td><%= image_tag rf.object.image.url %></td>
           </tr>
@@ -67,7 +67,7 @@
     </table>
 
     <div class='actions'>
-      <%= f.submit '戻る', class: 'btn btn-danger', name: 'back' %>
+      <%= f.submit '戻る', class: 'btn btn-danger', name: :back %>
       <%= f.submit '確認', class: 'btn btn-primary' %>
     </div>
 

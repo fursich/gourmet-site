@@ -13,3 +13,6 @@
  *= require_tree .
  *= require_self
  */
+.login_logout_wrapper {
+  text_align: right;
+}
