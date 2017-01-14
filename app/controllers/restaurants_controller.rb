@@ -14,6 +14,12 @@ class RestaurantsController < ApplicationController
       marker.lng  res.longitude
       marker.json({title: res.name})
     end
+    if user_signed_in?
+      if @restaurant.reviews.select{|s| s.user_id == current_user.id}.length==0
+        @review=Review.new
+      end
+    end
+    
   end
   
   def new

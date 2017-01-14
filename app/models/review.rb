@@ -1,6 +1,6 @@
 class Review < ActiveRecord::Base
-    belong_to :restaurant
-    belong_to :user
+    belongs_to :restaurant
+    belongs_to :user
 
     validates :restaurant_id, presence: true
     validates :user_id, presence: true
