@@ -2,7 +2,7 @@ class Restaurant < ActiveRecord::Base
     has_many :restaurant_genres
     has_many :genres, through: :restaurant_genres
     has_many :restaurant_images, dependent: :destroy
-    accespts_nested_attributes_for :restaurant_images
+    accepts_nested_attributes_for :restaurant_images
     
     geocoded_by :address
     after_validation :geocode

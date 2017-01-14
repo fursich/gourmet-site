@@ -9,7 +9,6 @@ Bundler.require(*Rails.groups)
 module ElitesGourmetSite
   class Application < Rails::Application
     
-    config.autoload_paths += Dir[Rails.root.join('app', 'uploaders')]
 
     # Settings in config/environments/* take precedence over those specified here.
     # Application configuration should go into files in config/initializers
@@ -25,6 +24,7 @@ module ElitesGourmetSite
 
     # Do not swallow errors in after_commit/after_rollback callbacks.
     config.active_record.raise_in_transactional_callbacks = true
+    config.autoload_paths += Dir[Rails.root.join('app', 'uploaders')]
     
     config.action_view.field_error_proc = Proc.new {|html_tag, instance| %Q(#{html_tag}).html_safe}
   end
