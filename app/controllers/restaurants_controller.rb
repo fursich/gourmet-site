@@ -66,7 +66,7 @@ class RestaurantsController < ApplicationController
     @restaurant = Restaurant.new(input_params)
     @restaurant.user_id = current_user.id
     if params[:back]
-    @restaurant.restaurant_images do |ri|
+    @restaurant.restaurant_images.each do |ri|
       ri.image.cache! unless ri.image.blank?
     end
       render :new
@@ -80,7 +80,7 @@ class RestaurantsController < ApplicationController
 
   def edit
     @restaurant = Restaurant.find_by(id: params[:id], user_id: current_user.id)
-    @restaurant.restaurant_images do |ri|
+    @restaurant.restaurant_images.each do |ri|
       ri.image.cache! unless ri.image.blank?
     end
   end
@@ -89,7 +89,7 @@ class RestaurantsController < ApplicationController
     @restaurant = Restaurant.find_by(id: params[:id], user_id: current_user.id)
     @restaurant.attributes = input_params
     if params[:back]
-      @restaurant.restaurant_images do |ri|
+      @restaurant.restaurant_images.each do |ri|
         ri.image.cache! unless ri.image.blank?
       end
       render :new
@@ -109,6 +109,6 @@ class RestaurantsController < ApplicationController
   
   private
   def input_params
-    params.require(:restaurant).permit(:name, :telephone_number, :address, :has_private_room, :seat_count, :open_date, genre_ids: [], restaurant_images_attributes: [:id, :image, :image_cache])
+    params.require(:restaurant).permit(:name, :introduction, :telephone_number, :address, :has_private_room, :seat_count, :open_date, genre_ids: [], restaurant_images_attributes: [:id, :image, :image_cache])
   end
 end
