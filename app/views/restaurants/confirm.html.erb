@@ -11,6 +11,12 @@
       </tr>
       
       <tr>
+        <th><%= f.label :introduction %></th>
+        <td><%= raw @restaurant.introduction %></td>
+        <%= f.hidden_field :introduction %>
+      </tr>
+
+      <tr>
         <th><%= f.label :telephone_number %></th>
         <td><%= @restaurant.telephone_number %></td>
         <%= f.hidden_field :telephone_number %>
